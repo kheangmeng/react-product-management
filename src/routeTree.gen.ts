@@ -9,26 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProductsIndexRouteImport } from './routes/products/index'
-import { Route as ProductsCreateRouteImport } from './routes/products/create'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo.tanstack-query'
-import { Route as ProductsProductIdIndexRouteImport } from './routes/products/$productId/index'
-import { Route as ProductsProductIdEditRouteImport } from './routes/products/$productId/edit'
+import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
+import { Route as AdminProductsAddRouteImport } from './routes/admin/products/add'
+import { Route as AdminProductsProductIdIndexRouteImport } from './routes/admin/products/$productId/index'
+import { Route as AdminProductsProductIdEditRouteImport } from './routes/admin/products/$productId/edit'
 
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProductsIndexRoute = ProductsIndexRouteImport.update({
-  id: '/products/',
-  path: '/products/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProductsCreateRoute = ProductsCreateRouteImport.update({
-  id: '/products/create',
-  path: '/products/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
@@ -36,99 +32,107 @@ const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
   path: '/demo/tanstack-query',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProductsProductIdIndexRoute = ProductsProductIdIndexRouteImport.update({
-  id: '/products/$productId/',
-  path: '/products/$productId/',
-  getParentRoute: () => rootRouteImport,
+const AdminProductsIndexRoute = AdminProductsIndexRouteImport.update({
+  id: '/products/',
+  path: '/products/',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
-const ProductsProductIdEditRoute = ProductsProductIdEditRouteImport.update({
-  id: '/products/$productId/edit',
-  path: '/products/$productId/edit',
-  getParentRoute: () => rootRouteImport,
+const AdminProductsAddRoute = AdminProductsAddRouteImport.update({
+  id: '/products/add',
+  path: '/products/add',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminProductsProductIdIndexRoute =
+  AdminProductsProductIdIndexRouteImport.update({
+    id: '/products/$productId/',
+    path: '/products/$productId/',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminProductsProductIdEditRoute =
+  AdminProductsProductIdEditRouteImport.update({
+    id: '/products/$productId/edit',
+    path: '/products/$productId/edit',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/products/create': typeof ProductsCreateRoute
-  '/products': typeof ProductsIndexRoute
-  '/products/$productId/edit': typeof ProductsProductIdEditRoute
-  '/products/$productId': typeof ProductsProductIdIndexRoute
+  '/admin/products/add': typeof AdminProductsAddRoute
+  '/admin/products': typeof AdminProductsIndexRoute
+  '/admin/products/$productId/edit': typeof AdminProductsProductIdEditRoute
+  '/admin/products/$productId': typeof AdminProductsProductIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/products/create': typeof ProductsCreateRoute
-  '/products': typeof ProductsIndexRoute
-  '/products/$productId/edit': typeof ProductsProductIdEditRoute
-  '/products/$productId': typeof ProductsProductIdIndexRoute
+  '/admin/products/add': typeof AdminProductsAddRoute
+  '/admin/products': typeof AdminProductsIndexRoute
+  '/admin/products/$productId/edit': typeof AdminProductsProductIdEditRoute
+  '/admin/products/$productId': typeof AdminProductsProductIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/products/create': typeof ProductsCreateRoute
-  '/products/': typeof ProductsIndexRoute
-  '/products/$productId/edit': typeof ProductsProductIdEditRoute
-  '/products/$productId/': typeof ProductsProductIdIndexRoute
+  '/admin/products/add': typeof AdminProductsAddRoute
+  '/admin/products/': typeof AdminProductsIndexRoute
+  '/admin/products/$productId/edit': typeof AdminProductsProductIdEditRoute
+  '/admin/products/$productId/': typeof AdminProductsProductIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/demo/tanstack-query'
-    | '/products/create'
-    | '/products'
-    | '/products/$productId/edit'
-    | '/products/$productId'
+    | '/admin/products/add'
+    | '/admin/products'
+    | '/admin/products/$productId/edit'
+    | '/admin/products/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/demo/tanstack-query'
-    | '/products/create'
-    | '/products'
-    | '/products/$productId/edit'
-    | '/products/$productId'
+    | '/admin/products/add'
+    | '/admin/products'
+    | '/admin/products/$productId/edit'
+    | '/admin/products/$productId'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/demo/tanstack-query'
-    | '/products/create'
-    | '/products/'
-    | '/products/$productId/edit'
-    | '/products/$productId/'
+    | '/admin/products/add'
+    | '/admin/products/'
+    | '/admin/products/$productId/edit'
+    | '/admin/products/$productId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
-  ProductsCreateRoute: typeof ProductsCreateRoute
-  ProductsIndexRoute: typeof ProductsIndexRoute
-  ProductsProductIdEditRoute: typeof ProductsProductIdEditRoute
-  ProductsProductIdIndexRoute: typeof ProductsProductIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/products/': {
-      id: '/products/'
-      path: '/products'
-      fullPath: '/products'
-      preLoaderRoute: typeof ProductsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/products/create': {
-      id: '/products/create'
-      path: '/products/create'
-      fullPath: '/products/create'
-      preLoaderRoute: typeof ProductsCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/tanstack-query': {
@@ -138,30 +142,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoTanstackQueryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/products/$productId/': {
-      id: '/products/$productId/'
-      path: '/products/$productId'
-      fullPath: '/products/$productId'
-      preLoaderRoute: typeof ProductsProductIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/admin/products/': {
+      id: '/admin/products/'
+      path: '/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
-    '/products/$productId/edit': {
-      id: '/products/$productId/edit'
+    '/admin/products/add': {
+      id: '/admin/products/add'
+      path: '/products/add'
+      fullPath: '/admin/products/add'
+      preLoaderRoute: typeof AdminProductsAddRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/products/$productId/': {
+      id: '/admin/products/$productId/'
+      path: '/products/$productId'
+      fullPath: '/admin/products/$productId'
+      preLoaderRoute: typeof AdminProductsProductIdIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/products/$productId/edit': {
+      id: '/admin/products/$productId/edit'
       path: '/products/$productId/edit'
-      fullPath: '/products/$productId/edit'
-      preLoaderRoute: typeof ProductsProductIdEditRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/admin/products/$productId/edit'
+      preLoaderRoute: typeof AdminProductsProductIdEditRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
   }
 }
 
+interface AdminRouteRouteChildren {
+  AdminProductsAddRoute: typeof AdminProductsAddRoute
+  AdminProductsIndexRoute: typeof AdminProductsIndexRoute
+  AdminProductsProductIdEditRoute: typeof AdminProductsProductIdEditRoute
+  AdminProductsProductIdIndexRoute: typeof AdminProductsProductIdIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminProductsAddRoute: AdminProductsAddRoute,
+  AdminProductsIndexRoute: AdminProductsIndexRoute,
+  AdminProductsProductIdEditRoute: AdminProductsProductIdEditRoute,
+  AdminProductsProductIdIndexRoute: AdminProductsProductIdIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
-  ProductsCreateRoute: ProductsCreateRoute,
-  ProductsIndexRoute: ProductsIndexRoute,
-  ProductsProductIdEditRoute: ProductsProductIdEditRoute,
-  ProductsProductIdIndexRoute: ProductsProductIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

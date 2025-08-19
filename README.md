@@ -1,4 +1,6 @@
-Welcome to your new TanStack app! 
+# React Product Management
+
+This boilerplate repository is solely designed for basic show casting, and in production, it will undergo more significant changes.
 
 # Getting Started
 
