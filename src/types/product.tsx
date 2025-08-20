@@ -1,5 +1,6 @@
 export interface ProductResponse {
-  id: string
+  id: string | number
+  added: Date
   title: string
   description: string
   category: string
@@ -7,6 +8,7 @@ export interface ProductResponse {
   discountPercentage: number
   sku: string
   stock: number
+  variant?: number
 }
 
 export type Product = Pick<ProductResponse,

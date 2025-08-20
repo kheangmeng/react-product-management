@@ -17,6 +17,16 @@ export function formatDate(date: string | Date): string {
   return new Date(date).toLocaleString('en-US', options)
 }
 
+export function formatDateTable(date: string | Date): string {
+  const options: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  };
+
+  return new Intl.DateTimeFormat('en-GB', options).format(new Date(date));
+}
+
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
