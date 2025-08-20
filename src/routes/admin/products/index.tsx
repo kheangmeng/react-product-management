@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { ProductTable } from '../../../components/tables/ProductTable'
-import { Plus, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { createFileRoute } from '@tanstack/react-router'
 import { Link } from '@tanstack/react-router'
+import { Download, Plus } from "lucide-react"
+import { ProductTable } from '../../../components/tables/product-table'
 
 export const Route = createFileRoute('/admin/products/')({
   component: RouteComponent,

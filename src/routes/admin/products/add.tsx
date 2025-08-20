@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { ProductForm } from "@/components/forms/product-form"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,7 +8,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
-import { X, Plus } from "lucide-react"
+import { createFileRoute } from '@tanstack/react-router'
+import { Plus, X } from "lucide-react"
 
 export const Route = createFileRoute('/admin/products/add')({
   component: AddProduct,
@@ -16,7 +17,7 @@ export const Route = createFileRoute('/admin/products/add')({
 
 function AddProduct() {
   return <div>
-    <div className="flex justify-between items-center gap-2 px-3">
+    <div className="flex justify-between items-center gap-2 px-3 mb-6">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem className="hidden md:block">
@@ -33,8 +34,9 @@ function AddProduct() {
 
       <div className='flex gap-3'>
         <Button variant="outline"> <X /> Cancel</Button>
-        <Button><Plus /> Add Product</Button>
+        <Button type="submit" form="add-product"><Plus /> Add Product</Button>
       </div>
     </div>
+    <ProductForm id="add-product" />
   </div>
 }

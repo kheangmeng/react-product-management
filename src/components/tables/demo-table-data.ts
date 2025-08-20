@@ -19,13 +19,22 @@ const newProduct = (num: number): ProductResponse => {
     sku: faker.finance.accountNumber(5),
     stock: faker.number.int(100),
     added: faker.date.past(),
-    category: faker.commerce.department(),
     variant: faker.number.int(3),
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    category: faker.helpers.shuffle<ProductResponse['category']>([
+      'smartphone',
+      'laptop',
+      'tablet',
+      'accessories',
+      'wearables',
+      'gaming',
+    ])[0]!,
   }
 }
 
 export function makeData(...lens: number[]) {
   const makeDataLevel = (depth = 0): ProductResponse[] => {
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     const len = lens[depth]!
     return range(len).map((index): ProductResponse => {
       return {

@@ -13,24 +13,19 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table"
-import {
-  Pencil,
-  Trash,
-  StepBack,
-  StepForward,
-  CalendarDays,
-  SlidersHorizontal
-} from "lucide-react"
-import { formatDateTable, formatCurrency } from "@/lib/utils"
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { ButtonIcon } from "@/components/ui/button-icon"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import {
   Table,
@@ -40,13 +35,48 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { makeData } from "./demo-table-data"
-import type { ProductResponse } from "@/types/product"
 
-const data: ProductResponse[] = makeData(10)
-console.log(data)
+const data: Payment[] = [
+  {
+    id: "m5gr84i9",
+    amount: 316,
+    status: "success",
+    email: "ken99@example.com",
+  },
+  {
+    id: "3u1reuv4",
+    amount: 242,
+    status: "success",
+    email: "Abe45@example.com",
+  },
+  {
+    id: "derv1ws0",
+    amount: 837,
+    status: "processing",
+    email: "Monserrat44@example.com",
+  },
+  {
+    id: "5kma53ae",
+    amount: 874,
+    status: "success",
+    email: "Silas22@example.com",
+  },
+  {
+    id: "bhqecj4p",
+    amount: 721,
+    status: "failed",
+    email: "carmella@example.com",
+  },
+]
 
-export const columns: ColumnDef<ProductResponse>[] = [
+export type Payment = {
+  id: string
+  amount: number
+  status: "pending" | "processing" | "success" | "failed"
+  email: string
+}
+
+export const columns: ColumnDef<Payment>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -70,76 +100,68 @@ export const columns: ColumnDef<ProductResponse>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "title",
-    header: "Product",
+    accessorKey: "status",
+    header: "Status",
     cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <div className="bg-muted/80 w-8 h-8 rounded-sm" />
-        <div>
-          <div className="capitalize">{row.getValue("title")}</div>
-          <div className="text-gray-400 text-xs capitalize">{2} Variants</div>
-        </div>
-      </div>
-    ),
-  },
-  // {
-  //   accessorKey: "variant",
-  //   header: "Variant",
-  //   cell: ({ row }) => (
-  //     <div className="capitalize text-blue-600">{row.getValue("variant")}</div>
-  //   ),
-  // },
-  {
-    accessorKey: "sku",
-    header: "SKU",
-    cell: ({ row }) => (
-      <div className="capitalize text-blue-600">{row.getValue("sku")}</div>
+      <div className="capitalize">{row.getValue("status")}</div>
     ),
   },
   {
-    accessorKey: "category",
-    header: "Category",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("category")}</div>
-    ),
+    accessorKey: "email",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Email
+          <ArrowUpDown />
+        </Button>
+      )
+    },
+    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
   {
-    accessorKey: "stock",
-    header: "Stock",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("stock")}</div>
-    ),
-  },
-  {
-    accessorKey: "price",
-    header: () => <div className="text-right">Price</div>,
+    accessorKey: "amount",
+    header: () => <div className="text-right">Amount</div>,
     cell: ({ row }) => {
-      const price = parseFloat(row.getValue("price"))
-      return <div className="text-right font-medium">{formatCurrency(price)}</div>
+      const amount = parseFloat(row.getValue("amount"))
+
+      // Format the amount as a dollar amount
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(amount)
+
+      return <div className="text-right font-medium">{formatted}</div>
     },
   },
   {
-    accessorKey: "added",
-    header: () => <div className="text-right">Added</div>,
-    cell: ({ row }) => (
-      <div className="text-right capitalize">{formatDateTable(row.getValue("added"))}</div>
-    ),
-  },
-  {
     id: "actions",
-    header: () => <div className="text-right">Action</div>,
+    enableHiding: false,
     cell: ({ row }) => {
       const payment = row.original
 
       return (
-        <div className="text-right space-x-1">
-          <ButtonIcon disabled onClick={() => navigator.clipboard.writeText(payment.id + '')}>
-            <Pencil />
-          </ButtonIcon>
-          <ButtonIcon disabled>
-            <Trash />
-          </ButtonIcon>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(payment.id)}
+            >
+              Copy payment ID
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>View customer</DropdownMenuItem>
+            <DropdownMenuItem>View payment details</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )
     },
   },
@@ -175,31 +197,41 @@ export function ProductTable() {
 
   return (
     <div className="w-full">
-      <div className="flex md:flex-row flex-col items-center justify-between">
-        <Tabs defaultValue="All Product">
-          <TabsList>
-            <TabsTrigger value="All Product">All Product</TabsTrigger>
-            <TabsTrigger value="Published">Published</TabsTrigger>
-            <TabsTrigger value="Low Stock">Low Stock</TabsTrigger>
-            <TabsTrigger value="Draft">Draft</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <div className="flex items-center py-4 gap-2">
-          <Input
-            placeholder="Search product..."
-            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn("title")?.setFilterValue(event.target.value)
-            }
-            className="w-3xs"
-          />
-          <Button variant="outline" size="sm">
-            <CalendarDays /> Select Date
-          </Button>
-          <Button variant="outline" size="sm">
-            <SlidersHorizontal /> Filters
-          </Button>
-        </div>
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Filter emails..."
+          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("email")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Columns <ChevronDown />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                )
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="overflow-hidden rounded-md border">
         <Table>
@@ -253,51 +285,26 @@ export function ProductTable() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="text-muted-foreground flex-1 text-sm">
-          Showing 1-10 from {table.getFilteredRowModel().rows.length}
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="flex space-x-2">
-          <ButtonIcon
+        <div className="space-x-2">
+          <Button
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            <StepBack />
-          </ButtonIcon>
-
-          <ButtonIcon
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            1
-          </ButtonIcon>
-          <ButtonIcon
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            2
-          </ButtonIcon>
-          <ButtonIcon
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            3
-          </ButtonIcon>
-
-          <ButtonIcon
+            Previous
+          </Button>
+          <Button
             variant="outline"
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            <StepForward />
-          </ButtonIcon>
+            Next
+          </Button>
         </div>
       </div>
     </div>
