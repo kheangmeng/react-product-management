@@ -1,6 +1,4 @@
 "use client"
-import type { LucideIcon } from "lucide-react"
-import { Link } from "@tanstack/react-router"
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -8,6 +6,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { Link } from "@tanstack/react-router"
+import type { LucideIcon } from "lucide-react"
 
 export function NavMain({
   items,
@@ -23,8 +23,11 @@ export function NavMain({
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           {items.map((item) => (
-            <Link to={item.url} key={item.title}>
-              <SidebarMenuItem key={item.title}>
+            <Link disabled={!item.url} to={item.url} key={item.title}>
+              <SidebarMenuItem
+                key={item.title}
+                className={!item.url ? "text-muted-foreground" : ''}
+              >
                 <SidebarMenuButton tooltip={item.title}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>

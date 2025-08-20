@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { Save, X } from "lucide-react"
 import { makeData } from "../../../../components/tables/demo-table-data"
 
@@ -36,7 +36,9 @@ function EditProduct() {
       </Breadcrumb>
 
       <div className='flex gap-3'>
-        <Button variant="outline"> <X /> Cancel</Button>
+        <Link to="/admin/products">
+          <Button variant="outline"> <X /> Cancel</Button>
+        </Link>
         <Button type="submit" form="edit-product"><Save /> Save Product</Button>
       </div>
     </div>

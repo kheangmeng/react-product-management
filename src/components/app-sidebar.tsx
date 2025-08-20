@@ -1,12 +1,3 @@
-import * as React from "react"
-import {
-  GalleryVerticalEnd,
-  LayoutDashboardIcon,
-  Box,
-  BaggageClaim,
-  Users,
-  FileText,
-} from "lucide-react"
 import { NavMain } from "@/components/ui/nav-main"
 import {
   Sidebar,
@@ -17,12 +8,21 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import {
+  BaggageClaim,
+  Box,
+  FileText,
+  GalleryVerticalEnd,
+  LayoutDashboardIcon,
+  Users,
+} from "lucide-react"
+import type * as React from "react"
 
 const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/admin/products",
+      url: "/",
       icon: LayoutDashboardIcon,
     },
     {
@@ -32,17 +32,17 @@ const data = {
     },
     {
       title: "Order Management",
-      url: "/admin/products/123",
+      url: "",
       icon: BaggageClaim,
     },
     {
       title: "Customer Management",
-      url: "/admin/products/123/edit",
+      url: "",
       icon: Users,
     },
     {
       title: "Report",
-      url: "#",
+      url: "",
       icon: FileText,
     },
   ],

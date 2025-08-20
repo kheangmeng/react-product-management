@@ -4,8 +4,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -16,8 +23,11 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import type { ProductResponse } from "@/types"
+import type { Product, ProductResponse } from "@/types"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { type UseFormReturn, useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { z } from "zod"
 
 const categories = [
   { value: 'smartphone', label: 'Smartphone' },
@@ -28,138 +38,257 @@ const categories = [
   { value: 'gaming', label: 'Gaming' },
 ]
 
-function submitForm(event: React.FormEvent<HTMLFormElement>) {
-  event.preventDefault()
-  toast.success("Product has been added")
-  console.log("Form submitted")
-}
+type SchemaForm = UseFormReturn<Product, any, Product>
+const formSchema = z.object({
+  title: z.string().min(2, {
+    message: "Product name must be at least 2 characters.",
+  }),
+  description: z.string().min(10, {
+    message: "Description must be at least 10 characters.",
+  }),
+  price: z.coerce.number().positive({
+    message: "Price must be a positive number.",
+  }),
+  discountPercentage: z.coerce.number().min(1, {
+    message: "Discount percentage must be a positive number.",
+  }),
+  sku: z.string().min(1, {
+    message: "SKU is required.",
+  }),
+  stock: z.coerce.number().min(1, {
+    message: "Quantity must be a non-negative number.",
+  }),
+  category: z.string().min(1, {
+    message: "Category is required.",
+  }),
+})
 
 export function ProductForm({ id, data }: { id?: string, data?: ProductResponse }) {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: data?.title || "",
+      description: data?.description || "",
+      price: data?.price || 0,
+      discountPercentage: data?.discountPercentage || 0,
+      sku: data?.sku || "",
+      stock: data?.stock || 0,
+      category: data?.category || "",
+    },
+  })
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values)
+    toast.success("Product has been added")
+  }
+
   return (
-    <form onSubmit={submitForm} id={id} className="flex md:flex-row flex-col gap-6">
-      <div className="flex flex-col gap-6 md:w-2/3 w-1/1">
-        <Card className="w-full mx-auto">
-          <CardHeader>
-            <CardTitle>General Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="productName" className="text-gray-500">Product Name</Label>
-                <Input
-                  id="productName"
-                  type="text"
-                  defaultValue={data?.title || ""}
-                  placeholder="Type product name here..."
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="description" className="text-gray-500">Description</Label>
-                <Textarea
-                  id="description"
-                  defaultValue={data?.description || ""}
-                  placeholder="Type product description here...."
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="w-full mx-auto">
-          <CardHeader>
-            <CardTitle>Pricing</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="price" className="text-gray-500">Base Price</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  defaultValue={data?.price || ""}
-                  placeholder="$ Type base price here..."
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="discount" className="text-gray-500">Discount Percentage (%)</Label>
-                <Input
-                  id="discount"
-                  type="number"
-                  defaultValue={data?.discountPercentage || ""}
-                  placeholder="Type discount percentage here...."
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="w-full mx-auto">
-          <CardHeader>
-            <CardTitle>Inventory</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-6">
-              <div className="grid gap-2 w-1/2">
-                <Label htmlFor="sku" className="text-gray-500">SKU</Label>
-                <Input
-                  id="sku"
-                  type="text"
-                  defaultValue={data?.sku || ""}
-                  placeholder="Type product SKU here..."
-                  required
-                />
-              </div>
-              <div className="grid gap-2 w-1/2">
-                <Label htmlFor="quantity" className="text-gray-500">Quantity</Label>
-                <Input
-                  id="quantity"
-                  type="number"
-                  defaultValue={data?.stock || ""}
-                  placeholder="Type product quantity here..."
-                  required
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      <div className="md:w-1/3 w-1/1 mx-auto">
-        <Card >
-          <CardHeader>
-            <CardTitle>Category</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col gap-6 w-full">
-              <div className="grid gap-2">
-                <Label htmlFor="category" className="text-gray-500">Product Category</Label>
-                <Select defaultValue={data?.category || ""} required>
-                  <SelectTrigger
-                    id="category"
-                    className="w-full"
-                  >
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Category</SelectLabel>
-                      {
-                        categories.map((category) => (
-                          <SelectItem
-                            key={category.value}
-                            value={category.value}
-                          >
-                            {category.label}
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} id={id} className="flex md:flex-row flex-col gap-6">
+        <div className="flex flex-col gap-6 md:w-2/3 w-1/1">
+          <GeneralInformationForm form={form} />
+          <PriceForm form={form} />
+          <InventoryForm form={form} />
+        </div>
+        <div className="md:w-1/3 w-1/1 mx-auto">
+          <CategoryForm form={form} />
+        </div>
+      </form>
+    </Form>
+  )
+}
+
+function GeneralInformationForm({form}: { form: SchemaForm}) {
+  return (
+    <Card className="w-full mx-auto">
+      <CardHeader>
+        <CardTitle>General Information</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-6">
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-500">Product Name</FormLabel>
+                <FormControl>
+                  <Input defaultValue={field.value} placeholder="Type product name here..." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-500">Description</FormLabel>
+                <FormControl>
+                  <Textarea defaultValue={field.value} placeholder="Type product description here...." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function PriceForm({form}: { form: SchemaForm}) {
+  return (
+    <Card className="w-full mx-auto">
+      <CardHeader>
+        <CardTitle>Price</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-6">
+          <FormField
+            control={form.control}
+            name="price"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-500">Base Price</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    defaultValue={field.value}
+                    placeholder="$ Type base price here..."
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="discountPercentage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-500">Discount Percentage</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    defaultValue={field.value}
+                    placeholder="Type discount percentage here...."
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function InventoryForm({form}: { form: SchemaForm}) {
+  return (
+    <Card className="w-full mx-auto">
+      <CardHeader>
+        <CardTitle>Inventory</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex gap-6">
+          <div className="grid gap-2 w-1/2">
+            <FormField
+              control={form.control}
+              name="sku"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-500">SKU</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      defaultValue={field.value}
+                      placeholder="Type product SKU here..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="grid gap-2 w-1/2">
+            <FormField
+              control={form.control}
+              name="stock"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-500">Quantity</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      defaultValue={field.value}
+                      placeholder="Type product quantity here..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function CategoryForm({form}: { form: SchemaForm}) {
+  return (
+    <Card >
+      <CardHeader>
+        <CardTitle>Category</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-6 w-full">
+          <div className="grid gap-2">
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-500">Product Category</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger
+                          id="category"
+                          className="w-full"
+                          {...field}
+                        >
+                          <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Category</SelectLabel>
+                          {
+                            categories.map((category) => (
+                              <SelectItem
+                                key={category.value}
+                                value={category.value}
+                              >
+                                {category.label}
+                              </SelectItem>
+                            ))
+                          }
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
