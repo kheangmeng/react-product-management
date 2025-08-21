@@ -40,6 +40,8 @@ import { ButtonIcon } from "@/components/ui/button-icon"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 
+import { getProductList } from "@/api/product/fetch-api"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import {
   Table,
   TableBody,
@@ -54,9 +56,8 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import type { Pagination } from "@/types"
-import type { ProductResponse } from "@/types/product"
+import type { ProductListResponse, ProductResponse } from "@/types/product"
 import { useQuery } from "@tanstack/react-query"
-import { makeData } from "./demo-table-data"
 
 export const columns: ColumnDef<ProductResponse>[] = [
   {
@@ -89,7 +90,11 @@ export const columns: ColumnDef<ProductResponse>[] = [
 
       return (
         <div className="flex items-center gap-2">
-          <div className="bg-slate-300 w-8 h-8 rounded-sm" />
+          <Avatar className="rounded-lg">
+            <AvatarImage
+              src={original.thumbnail}
+            />
+          </Avatar>
           <div>
             <div className="capitalize">{row.getValue("title")}</div>
             <div className="text-gray-400 text-xs capitalize">
@@ -200,7 +205,6 @@ function PaginationTable({search}: { search: Pagination }) {
           variant="secondary"
           className="text-primary"
           size="sm"
-          disabled={!search.skip || search.skip === 1}
         >
           <StepBack />
         </Button>
@@ -218,7 +222,6 @@ function PaginationTable({search}: { search: Pagination }) {
               variant={search.skip === page ? undefined : "secondary"}
               className={search.skip === page ? "active:bg-primary active:text-white" : "text-primary"}
               size="sm"
-              disabled={!search.skip || search.skip === page}
             >
               {page}
             </Button>
@@ -242,7 +245,6 @@ function PaginationTable({search}: { search: Pagination }) {
           variant="secondary"
           className="text-primary"
           size="sm"
-          disabled={search.skip === 6}
         >
           <StepForward />
         </ButtonIcon>
@@ -251,7 +253,7 @@ function PaginationTable({search}: { search: Pagination }) {
   )
 }
 
-export function ProductTable() {
+ function MainTable({ data, search }: { data: ProductListResponse, search: Pagination }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -260,18 +262,9 @@ export function ProductTable() {
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-  const routerState = useRouterState();
-  const search: Pagination = routerState.location.search;
-  const { data } = useQuery({
-    queryKey: ['products', search.skip],
-    queryFn: () =>
-      Promise.resolve(makeData(10)),
-    initialData: [],
-  })
-
   const table = useReactTable({
-    data,
     columns,
+    data: data.products,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -290,7 +283,7 @@ export function ProductTable() {
   const showPageInfo = (search: Pagination): string => {
     const pageIndex = search.skip ? search.skip : 1;
 
-    return `${(pageIndex * 10 - 10) || 1} - ${pageIndex * 10} from 30`;
+    return `${(pageIndex * 10 - 10) || 1} - ${pageIndex * 10} from ${data.total}`;
   }
 
   return (
@@ -379,4 +372,16 @@ export function ProductTable() {
       </div>
     </div>
   )
+}
+
+export function ProductTable() {
+  const routerState = useRouterState();
+  const search: Pagination = routerState.location.search;
+  const { data } = useQuery({
+    queryKey: ['products', search.skip],
+    queryFn: () => getProductList({skip: search.skip, limit: 10}),
+    initialData: null,
+  })
+
+  return (data && <MainTable data={data} search={search} />)
 }

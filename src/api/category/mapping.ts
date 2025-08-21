@@ -1,5 +1,10 @@
-import type { Category } from "@/types";
+import { capitalizeFirstLetter } from "@/lib/utils";
+import type { SelectCategoryData } from "@/types";
 
-export function mapCategories(res: any): string[] {
-  return res.categories?.map((category: Category) => (category.name))
+export function mapCategories(res: any): SelectCategoryData[] {
+  return res.map((category: string) => ({
+      label: capitalizeFirstLetter(category).replace('-', ' '),
+      value: category,
+    })
+  )
 }

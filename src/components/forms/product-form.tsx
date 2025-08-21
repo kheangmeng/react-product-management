@@ -1,3 +1,4 @@
+import { getCategoryList } from "@/api/category/fetch-api"
 import {
   Card,
   CardContent,
@@ -23,8 +24,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { isProduction } from "@/lib/utils"
 import type { Product, ProductResponse } from "@/types"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useQuery } from "@tanstack/react-query"
 import { type UseFormReturn, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -208,6 +211,13 @@ function InventoryForm({form}: { form: SchemaForm}) {
 }
 
 function CategoryForm({form}: { form: SchemaForm}) {
+  const { data } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () =>
+      isProduction() ? getCategoryList() : categories,
+    initialData: [],
+  })
+
   return (
     <Card >
       <CardHeader>
@@ -236,7 +246,7 @@ function CategoryForm({form}: { form: SchemaForm}) {
                         <SelectGroup>
                           <SelectLabel>Category</SelectLabel>
                           {
-                            categories.map((category) => (
+                            data.map((category) => (
                               <SelectItem
                                 key={category.value}
                                 value={category.value}

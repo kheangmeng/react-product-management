@@ -1,13 +1,11 @@
 # React Product Management
 
-Environment Setup
+Environment Setup (Optional):
 
 ```bash
 create .env file and copy value from .env.example
-development: using faker.js to generate data
-production: will use api from VITE_BASE_API
 
-VITE_BASE_ENV: development
+VITE_BASE_ENV: production
 VITE_BASE_API: https://api.exampledomain.com
 ```
 

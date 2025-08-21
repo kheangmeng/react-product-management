@@ -9,6 +9,14 @@ export interface ProductResponse {
   sku: string
   stock: number
   variant?: number
+  thumbnail?: string
+  images?: string[]
+}
+export interface ProductListResponse {
+  products: ProductResponse[]
+  total: number
+  skip: number
+  limit: number
 }
 
 export type Product = Pick<ProductResponse,
@@ -19,4 +27,7 @@ export type Product = Pick<ProductResponse,
   | 'discountPercentage'
   | 'sku'
   | 'stock'
+  | 'variant'
+  | 'thumbnail'
+  | 'images'
 >

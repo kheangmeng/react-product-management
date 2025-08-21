@@ -1,3 +1,4 @@
+import { getProduct } from "@/api/product/fetch-api"
 import { ProductForm } from "@/components/forms/product-form"
 import {
   Breadcrumb,
@@ -8,17 +9,22 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { useQuery } from "@tanstack/react-query"
+import { Link, createFileRoute, useParams } from '@tanstack/react-router'
 import { Save, X } from "lucide-react"
-import { makeData } from "../../../../components/tables/demo-table-data"
 
 export const Route = createFileRoute('/admin/products/$productId/edit')({
   component: EditProduct,
 })
 
-const tempData = makeData(1)
-
 function EditProduct() {
+  const { productId } = useParams({ from: '/admin/products/$productId/edit' });
+  const { data, status } = useQuery({
+    queryKey: ['product-detail', productId],
+    queryFn: () => getProduct(Number(productId)),
+    initialData: undefined,
+  })
+
   return <div>
     <div className="flex justify-between items-center gap-2 px-3 mb-6">
       <Breadcrumb>
@@ -42,7 +48,7 @@ function EditProduct() {
         <Button type="submit" form="edit-product"><Save /> Save Product</Button>
       </div>
     </div>
-    <ProductForm id="edit-product" data={tempData[0]} />
+    { status === 'success' && <ProductForm id="edit-product" data={data} /> }
   </div>
 }
 
