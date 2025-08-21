@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DemoTanstackQueryRouteImport } from './routes/demo.tanstack-query'
 import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
 import { Route as AdminProductsAddRouteImport } from './routes/admin/products/add'
 import { Route as AdminProductsProductIdIndexRouteImport } from './routes/admin/products/$productId/index'
@@ -25,11 +24,6 @@ const AdminRouteRoute = AdminRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
-  id: '/demo/tanstack-query',
-  path: '/demo/tanstack-query',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminProductsIndexRoute = AdminProductsIndexRouteImport.update({
@@ -58,7 +52,6 @@ const AdminProductsProductIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/admin/products/add': typeof AdminProductsAddRoute
   '/admin/products': typeof AdminProductsIndexRoute
   '/admin/products/$productId/edit': typeof AdminProductsProductIdEditRoute
@@ -67,7 +60,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/admin/products/add': typeof AdminProductsAddRoute
   '/admin/products': typeof AdminProductsIndexRoute
   '/admin/products/$productId/edit': typeof AdminProductsProductIdEditRoute
@@ -77,7 +69,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/admin/products/add': typeof AdminProductsAddRoute
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/products/$productId/edit': typeof AdminProductsProductIdEditRoute
@@ -88,7 +79,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
-    | '/demo/tanstack-query'
     | '/admin/products/add'
     | '/admin/products'
     | '/admin/products/$productId/edit'
@@ -97,7 +87,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
-    | '/demo/tanstack-query'
     | '/admin/products/add'
     | '/admin/products'
     | '/admin/products/$productId/edit'
@@ -106,7 +95,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
-    | '/demo/tanstack-query'
     | '/admin/products/add'
     | '/admin/products/'
     | '/admin/products/$productId/edit'
@@ -116,7 +104,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
-  DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -133,13 +120,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/tanstack-query': {
-      id: '/demo/tanstack-query'
-      path: '/demo/tanstack-query'
-      fullPath: '/demo/tanstack-query'
-      preLoaderRoute: typeof DemoTanstackQueryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/products/': {
@@ -194,7 +174,6 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
-  DemoTanstackQueryRoute: DemoTanstackQueryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

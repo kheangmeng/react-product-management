@@ -1,7 +1,7 @@
 "use client"
 
 import { formatCurrency, formatDateTable } from "@/lib/utils"
-import { Link } from "@tanstack/react-router"
+import { Link, useRouterState } from "@tanstack/react-router"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -53,10 +53,10 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+import type { Pagination } from "@/types"
 import type { ProductResponse } from "@/types/product"
+import { useQuery } from "@tanstack/react-query"
 import { makeData } from "./demo-table-data"
-
-const data: ProductResponse[] = makeData(10)
 
 export const columns: ColumnDef<ProductResponse>[] = [
   {
@@ -84,23 +84,21 @@ export const columns: ColumnDef<ProductResponse>[] = [
   {
     accessorKey: "title",
     header: "Product",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <div className="bg-muted/80 w-8 h-8 rounded-sm" />
-        <div>
-          <div className="capitalize">{row.getValue("title")}</div>
-          <div className="text-gray-400 text-xs capitalize">{2} Variants</div>
+    cell: ({ row }) => {
+      const original = row.original
+
+      return (
+        <div className="flex items-center gap-2">
+          <div className="bg-slate-300 w-8 h-8 rounded-sm" />
+          <div>
+            <div className="capitalize">{row.getValue("title")}</div>
+            <div className="text-gray-400 text-xs capitalize">
+              {original.variant} Variants
+            </div>
+          </div>
         </div>
-      </div>
-    ),
+      )},
   },
-  // {
-  //   accessorKey: "variant",
-  //   header: "Variant",
-  //   cell: ({ row }) => (
-  //     <div className="capitalize text-blue-600">{row.getValue("variant")}</div>
-  //   ),
-  // },
   {
     accessorKey: "sku",
     header: "SKU",
@@ -134,7 +132,9 @@ export const columns: ColumnDef<ProductResponse>[] = [
     accessorKey: "added",
     header: () => <div className="text-right">Added</div>,
     cell: ({ row }) => (
-      <div className="text-right capitalize">{formatDateTable(row.getValue("added"))}</div>
+      <div className="text-right capitalize">
+        {formatDateTable(row.getValue("added"))}
+      </div>
     ),
   },
   {
@@ -145,7 +145,10 @@ export const columns: ColumnDef<ProductResponse>[] = [
 
       return (
         <div className="text-right space-x-1">
-          <Link to={`/admin/products/${original.id}/edit`}>
+          <Link
+            to="/admin/products/$productId/edit"
+            params={{ productId: `${original.id}` }}
+          >
             <ButtonIcon>
               <Pencil />
             </ButtonIcon>
@@ -185,6 +188,69 @@ function DeleteProductDialog({ productId }: { productId: number | string }) {
   )
 }
 
+function PaginationTable({search}: { search: Pagination }) {
+  return (
+    <div className="flex space-x-2">
+      <Link
+        to="/admin/products"
+        search={{ skip: 1 }}
+        disabled={!search.skip || search.skip === 1}
+      >
+        <Button
+          variant="secondary"
+          className="text-primary"
+          size="sm"
+          disabled={!search.skip || search.skip === 1}
+        >
+          <StepBack />
+        </Button>
+      </Link>
+
+      {
+        [1,2,3,4,5].map((page) => (
+          <Link
+            to="/admin/products"
+            search={{ skip: page }}
+            disabled={!search.skip || search.skip === page}
+            key={page}
+          >
+            <Button
+              variant={search.skip === page ? undefined : "secondary"}
+              className={search.skip === page ? "active:bg-primary active:text-white" : "text-primary"}
+              size="sm"
+              disabled={!search.skip || search.skip === page}
+            >
+              {page}
+            </Button>
+          </Link>
+        ))
+      }
+      <ButtonIcon
+        variant="ghost"
+        size="sm"
+        disabled
+      >
+        ...
+      </ButtonIcon>
+
+      <Link
+        to="/admin/products"
+        search={{ skip: 6 }}
+        disabled={search.skip === 6}
+      >
+        <ButtonIcon
+          variant="secondary"
+          className="text-primary"
+          size="sm"
+          disabled={search.skip === 6}
+        >
+          <StepForward />
+        </ButtonIcon>
+      </Link>
+    </div>
+  )
+}
+
 export function ProductTable() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -193,6 +259,15 @@ export function ProductTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+
+  const routerState = useRouterState();
+  const search: Pagination = routerState.location.search;
+  const { data } = useQuery({
+    queryKey: ['products', search.skip],
+    queryFn: () =>
+      Promise.resolve(makeData(10)),
+    initialData: [],
+  })
 
   const table = useReactTable({
     data,
@@ -212,16 +287,21 @@ export function ProductTable() {
       rowSelection,
     },
   })
+  const showPageInfo = (search: Pagination): string => {
+    const pageIndex = search.skip ? search.skip : 1;
+
+    return `${(pageIndex * 10 - 10) || 1} - ${pageIndex * 10} from 30`;
+  }
 
   return (
     <div className="w-full">
       <div className="flex md:flex-row flex-col items-center justify-between">
         <Tabs defaultValue="All Product">
           <TabsList>
-            <TabsTrigger value="All Product">All Product</TabsTrigger>
-            <TabsTrigger value="Published">Published</TabsTrigger>
-            <TabsTrigger value="Low Stock">Low Stock</TabsTrigger>
-            <TabsTrigger value="Draft">Draft</TabsTrigger>
+            <TabsTrigger className="text-primary" value="All Product">All Product</TabsTrigger>
+            <TabsTrigger className="text-primary" value="Published">Published</TabsTrigger>
+            <TabsTrigger className="text-primary" value="Low Stock">Low Stock</TabsTrigger>
+            <TabsTrigger className="text-primary" value="Draft">Draft</TabsTrigger>
           </TabsList>
         </Tabs>
         <div className="flex items-center py-4 gap-2">
@@ -293,52 +373,9 @@ export function ProductTable() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="text-muted-foreground flex-1 text-sm">
-          Showing 1-10 from {table.getFilteredRowModel().rows.length}
+          {showPageInfo(search)}
         </div>
-        <div className="flex space-x-2">
-          <ButtonIcon
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <StepBack />
-          </ButtonIcon>
-
-          <ButtonIcon
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            1
-          </ButtonIcon>
-          <ButtonIcon
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            2
-          </ButtonIcon>
-          <ButtonIcon
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            3
-          </ButtonIcon>
-
-          <ButtonIcon
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <StepForward />
-          </ButtonIcon>
-        </div>
+          <PaginationTable search={search} />
       </div>
     </div>
   )

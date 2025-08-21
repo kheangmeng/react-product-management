@@ -26,7 +26,7 @@ export function NavMain({
             <Link disabled={!item.url} to={item.url} key={item.title}>
               <SidebarMenuItem
                 key={item.title}
-                className={!item.url ? "text-muted-foreground" : ''}
+                className={!item.url ? "text-gray-300" : ''}
               >
                 <SidebarMenuButton tooltip={item.title}>
                   {item.icon && <item.icon />}

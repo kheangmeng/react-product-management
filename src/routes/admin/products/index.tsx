@@ -17,11 +17,11 @@ function RouteComponent() {
           placeholder="Search product..."
           className="max-w"
         />
-        <Button variant="outline" size="sm">
+        <Button variant="secondary" className="text-primary">
           <Download /> Export
         </Button>
         <Link to="/admin/products/add">
-          <Button variant="outline" size="sm">
+          <Button>
             <Plus /> Add Product
           </Button>
         </Link>

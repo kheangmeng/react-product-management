@@ -49,7 +49,7 @@ const formSchema = z.object({
   price: z.coerce.number().positive({
     message: "Price must be a positive number.",
   }),
-  discountPercentage: z.coerce.number().min(1, {
+  discountPercentage: z.coerce.number({
     message: "Discount percentage must be a positive number.",
   }),
   sku: z.string().min(1, {
@@ -62,40 +62,6 @@ const formSchema = z.object({
     message: "Category is required.",
   }),
 })
-
-export function ProductForm({ id, data }: { id?: string, data?: ProductResponse }) {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: data?.title || "",
-      description: data?.description || "",
-      price: data?.price || 0,
-      discountPercentage: data?.discountPercentage || 0,
-      sku: data?.sku || "",
-      stock: data?.stock || 0,
-      category: data?.category || "",
-    },
-  })
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-    toast.success("Product has been added")
-  }
-
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} id={id} className="flex md:flex-row flex-col gap-6">
-        <div className="flex flex-col gap-6 md:w-2/3 w-1/1">
-          <GeneralInformationForm form={form} />
-          <PriceForm form={form} />
-          <InventoryForm form={form} />
-        </div>
-        <div className="md:w-1/3 w-1/1 mx-auto">
-          <CategoryForm form={form} />
-        </div>
-      </form>
-    </Form>
-  )
-}
 
 function GeneralInformationForm({form}: { form: SchemaForm}) {
   return (
@@ -112,7 +78,7 @@ function GeneralInformationForm({form}: { form: SchemaForm}) {
               <FormItem>
                 <FormLabel className="text-gray-500">Product Name</FormLabel>
                 <FormControl>
-                  <Input defaultValue={field.value} placeholder="Type product name here..." {...field} />
+                  <Input className="bg-slate-50" placeholder="Type product name here..." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -125,7 +91,7 @@ function GeneralInformationForm({form}: { form: SchemaForm}) {
               <FormItem>
                 <FormLabel className="text-gray-500">Description</FormLabel>
                 <FormControl>
-                  <Textarea defaultValue={field.value} placeholder="Type product description here...." {...field} />
+                  <Textarea className="bg-slate-50" placeholder="Type product description here...." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -153,8 +119,8 @@ function PriceForm({form}: { form: SchemaForm}) {
                 <FormLabel className="text-gray-500">Base Price</FormLabel>
                 <FormControl>
                   <Input
+                    className="bg-slate-50"
                     type="number"
-                    defaultValue={field.value}
                     placeholder="$ Type base price here..."
                     {...field}
                   />
@@ -171,8 +137,8 @@ function PriceForm({form}: { form: SchemaForm}) {
                 <FormLabel className="text-gray-500">Discount Percentage</FormLabel>
                 <FormControl>
                   <Input
+                    className="bg-slate-50"
                     type="number"
-                    defaultValue={field.value}
                     placeholder="Type discount percentage here...."
                     {...field}
                   />
@@ -204,8 +170,8 @@ function InventoryForm({form}: { form: SchemaForm}) {
                   <FormLabel className="text-gray-500">SKU</FormLabel>
                   <FormControl>
                     <Input
+                      className="bg-slate-50"
                       type="text"
-                      defaultValue={field.value}
                       placeholder="Type product SKU here..."
                       {...field}
                     />
@@ -224,8 +190,8 @@ function InventoryForm({form}: { form: SchemaForm}) {
                   <FormLabel className="text-gray-500">Quantity</FormLabel>
                   <FormControl>
                     <Input
+                      className="bg-slate-50"
                       type="number"
-                      defaultValue={field.value}
                       placeholder="Type product quantity here..."
                       {...field}
                     />
@@ -260,7 +226,7 @@ function CategoryForm({form}: { form: SchemaForm}) {
                       <FormControl>
                         <SelectTrigger
                           id="category"
-                          className="w-full"
+                          className="w-full bg-slate-50"
                           {...field}
                         >
                           <SelectValue placeholder="Select a category" />
@@ -290,5 +256,39 @@ function CategoryForm({form}: { form: SchemaForm}) {
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+export function ProductForm({ id, data }: { id?: string, data?: ProductResponse }) {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: data?.title || "",
+      description: data?.description || "",
+      price: data?.price || 0,
+      discountPercentage: data?.discountPercentage || 0,
+      sku: data?.sku || "",
+      stock: data?.stock || 0,
+      category: data?.category || "",
+    },
+  })
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values)
+    toast.success("Product has been added")
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} id={id} className="flex md:flex-row flex-col gap-6">
+        <div className="flex flex-col gap-6 md:w-2/3 w-1/1">
+          <GeneralInformationForm form={form} />
+          <PriceForm form={form} />
+          <InventoryForm form={form} />
+        </div>
+        <div className="md:w-1/3 w-1/1 mx-auto">
+          <CategoryForm form={form} />
+        </div>
+      </form>
+    </Form>
   )
 }

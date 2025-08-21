@@ -36,7 +36,7 @@ function EditProduct() {
       </Breadcrumb>
 
       <div className='flex gap-3'>
-        <Link to="/admin/products">
+        <Link to="/admin/products" search={{ skip: 1 }}>
           <Button variant="outline"> <X /> Cancel</Button>
         </Link>
         <Button type="submit" form="edit-product"><Save /> Save Product</Button>

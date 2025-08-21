@@ -22,12 +22,12 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/",
+      url: "/admin",
       icon: LayoutDashboardIcon,
     },
     {
       title: "Product Management",
-      url: "/admin/products/add",
+      url: "/admin/products?skip=1",
       icon: Box,
     },
     {
@@ -51,9 +51,9 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="bg-sidebar-primary">
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="text-white hover:text-black">
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
@@ -67,7 +67,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="text-white bg-sidebar-primary">
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarRail />

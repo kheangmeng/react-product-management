@@ -14,6 +14,8 @@ import type { ReactNode } from "react"
 
 function displayTitle(path: string): string {
    switch (path) {
+    case '/admin':
+      return 'Dashboard'
     case '/admin/products':
       return 'Product'
     case '/admin/products/add':
@@ -37,7 +39,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             <div>{ displayTitle(currentPath) }</div>
           </div>
           <div className="flex items-center gap-3 ml-auto mr-5">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="bg-orange-200">
               Nik Shop <ChevronDown />
             </Button>
             <div className="relative">

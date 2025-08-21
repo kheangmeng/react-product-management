@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from 'clsx'
+import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
@@ -32,4 +32,9 @@ export function formatCurrency(amount: number): string {
     style: 'currency',
     currency: 'USD',
   }).format(amount)
+}
+
+export function isProduction(): boolean {
+  return import.meta.env.VITE_BASE_ENV === 'production'
+    && import.meta.env.VITE_BASE_API
 }

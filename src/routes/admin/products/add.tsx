@@ -33,7 +33,7 @@ function AddProduct() {
       </Breadcrumb>
 
       <div className='flex gap-3'>
-        <Link to="..">
+        <Link to="/admin/products" search={{ skip: 1 }}>
           <Button variant="outline"> <X /> Cancel</Button>
         </Link>
         <Button type="submit" form="add-product"><Plus /> Add Product</Button>

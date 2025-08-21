@@ -1,6 +1,21 @@
 # React Product Management
 
-This boilerplate repository is solely designed for basic show casting, and in production, it will undergo more significant changes.
+Environment Setup
+
+```bash
+create .env file and copy value from .env.example
+development: using faker.js to generate data
+production: will use api from VITE_BASE_API
+
+VITE_BASE_ENV: development
+VITE_BASE_API: https://api.exampledomain.com
+```
+
+```bash
+Node version: v22.15.0
+Package manager npm version: 11.4.2
+```
+
 
 # Getting Started
 
