@@ -1,7 +1,6 @@
 import { getProductList } from "@/api/product/fetch-api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
 import type { Pagination } from "@/types"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, useRouterState } from '@tanstack/react-router'
@@ -38,10 +37,7 @@ function RouteComponent() {
           </Button>
         </Link>
       </div>
-      { status === 'pending' ?
-          <Skeleton className="mt-6 h-[325px] w-full rounded-xl" />
-        : <ProductTable data={data} search={search} />
-      }
+      <ProductTable data={data} status={status} search={search} />
     </main>
   )
 }
