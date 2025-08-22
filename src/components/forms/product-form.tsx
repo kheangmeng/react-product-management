@@ -1,4 +1,5 @@
 import { getCategoryList } from "@/api/category/fetch-api"
+import { addProduct, editProduct } from "@/api/product/fetch-api"
 import {
   Card,
   CardContent,
@@ -24,22 +25,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { isProduction } from "@/lib/utils"
 import type { Product, ProductResponse } from "@/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
+import { useRouter } from "@tanstack/react-router"
+import { useState } from "react"
 import { type UseFormReturn, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-
-const categories = [
-  { value: 'smartphone', label: 'Smartphone' },
-  { value: 'laptop', label: 'Laptop'},
-  { value: 'tablet', label: 'Tablet' },
-  { value: 'accessories', label: 'Accessories' },
-  { value: 'wearables', label: 'Wearables' },
-  { value: 'gaming', label: 'Gaming' },
-]
 
 type SchemaForm = UseFormReturn<Product, any, Product>
 const formSchema = z.object({
@@ -213,8 +206,7 @@ function InventoryForm({form}: { form: SchemaForm}) {
 function CategoryForm({form}: { form: SchemaForm}) {
   const { data } = useQuery({
     queryKey: ['categories'],
-    queryFn: () =>
-      isProduction() ? getCategoryList() : categories,
+    queryFn: () => getCategoryList(),
     initialData: [],
   })
 
@@ -269,7 +261,9 @@ function CategoryForm({form}: { form: SchemaForm}) {
   )
 }
 
-export function ProductForm({ id, data }: { id?: string, data?: ProductResponse }) {
+export function ProductForm({ id, data, action }: { id?: string, data?: ProductResponse, action: 'add' | 'edit' }) {
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -283,9 +277,36 @@ export function ProductForm({ id, data }: { id?: string, data?: ProductResponse 
     },
   })
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-    toast.success("Product has been added")
+    setLoading(true)
+    if(action === 'add') {
+      onAddProduct(values)
+    } else {
+      data?.id ? onEditProduct(data.id, values) : toast.error("Product ID is required for editing")
+    }
   }
+  async function onAddProduct(values: z.infer<typeof formSchema>) {
+    try {
+      await addProduct(values)
+      toast.success("Product has been added")
+      router.navigate({ to: '/admin/products', search: { skip: 1 } })
+    } catch (error) {
+      toast.error("Failed to add product")
+    } finally {
+      setLoading(false)
+    }
+  }
+  async function onEditProduct(productId: number | string, values: z.infer<typeof formSchema>) {
+    try {
+      await editProduct(productId, values)
+      toast.success("Product has been updated")
+      router.navigate({ to: '/admin/products', search: { skip: 1 } })
+    } catch (error) {
+      toast.error("Failed to update product")
+    } finally {
+      setLoading(false)
+    }
+  }
+
 
   return (
     <Form {...form}>

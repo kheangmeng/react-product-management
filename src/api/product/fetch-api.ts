@@ -49,7 +49,7 @@ export async function addProduct(product: Product): Promise<ProductResponse> {
   throw new Error(data.message)
 }
 
-export async function editProduct(id: number, product: Product): Promise<ProductResponse> {
+export async function editProduct(id: number | string, product: Product): Promise<ProductResponse> {
   const res = await fetch(`${BASE_API}/products/${id}`, {
     method: 'PUT',
     headers: {
@@ -64,7 +64,7 @@ export async function editProduct(id: number, product: Product): Promise<Product
   throw new Error(data.message)
 }
 
-export async function deleteProduct(id: number): Promise<void> {
+export async function deleteProduct(id: number | string): Promise<void> {
   const res = await fetch(`${BASE_API}/products/${id}`, {
     method: 'DELETE',
     headers: {

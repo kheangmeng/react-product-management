@@ -39,6 +39,6 @@ function AddProduct() {
         <Button type="submit" form="add-product"><Plus /> Add Product</Button>
       </div>
     </div>
-    <ProductForm id="add-product" />
+    <ProductForm id="add-product" action="add" />
   </div>
 }

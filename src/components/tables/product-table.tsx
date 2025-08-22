@@ -1,7 +1,7 @@
 "use client"
 
 import { formatCurrency, formatDateTable } from "@/lib/utils"
-import { Link, useRouterState } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -40,7 +40,7 @@ import { ButtonIcon } from "@/components/ui/button-icon"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 
-import { getProductList } from "@/api/product/fetch-api"
+import { deleteProduct } from "@/api/product/fetch-api"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import {
   Table,
@@ -57,7 +57,7 @@ import {
 } from "@/components/ui/tabs"
 import type { Pagination } from "@/types"
 import type { ProductListResponse, ProductResponse } from "@/types/product"
-import { useQuery } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 export const columns: ColumnDef<ProductResponse>[] = [
   {
@@ -166,8 +166,13 @@ export const columns: ColumnDef<ProductResponse>[] = [
 ]
 
 function DeleteProductDialog({ productId }: { productId: number | string }) {
-  const handleDelete = () => {
-    console.log(`Product with ID ${productId} deleted.`)
+  const handleDelete = async () => {
+    try {
+      await deleteProduct(productId)
+      toast.success("Product deleted successfully")
+    } catch (error) {
+      console.error("Failed to delete product:", error)
+    }
   }
 
   return (
@@ -253,7 +258,7 @@ function PaginationTable({search}: { search: Pagination }) {
   )
 }
 
- function MainTable({ data, search }: { data: ProductListResponse, search: Pagination }) {
+export function ProductTable({ data, search }: { data?: ProductListResponse, search: Pagination }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -264,7 +269,7 @@ function PaginationTable({search}: { search: Pagination }) {
 
   const table = useReactTable({
     columns,
-    data: data.products,
+    data: data?.products || [],
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -283,7 +288,7 @@ function PaginationTable({search}: { search: Pagination }) {
   const showPageInfo = (search: Pagination): string => {
     const pageIndex = search.skip ? search.skip : 1;
 
-    return `${(pageIndex * 10 - 10) || 1} - ${pageIndex * 10} from ${data.total}`;
+    return `${(pageIndex * 10 - 10) || 1} - ${pageIndex * 10} from ${data?.total ?? 0}`;
   }
 
   return (
@@ -372,16 +377,4 @@ function PaginationTable({search}: { search: Pagination }) {
       </div>
     </div>
   )
-}
-
-export function ProductTable() {
-  const routerState = useRouterState();
-  const search: Pagination = routerState.location.search;
-  const { data } = useQuery({
-    queryKey: ['products', search.skip],
-    queryFn: () => getProductList({skip: search.skip, limit: 10}),
-    initialData: null,
-  })
-
-  return (data && <MainTable data={data} search={search} />)
 }

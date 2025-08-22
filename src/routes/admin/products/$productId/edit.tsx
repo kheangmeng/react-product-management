@@ -48,7 +48,7 @@ function EditProduct() {
         <Button type="submit" form="edit-product"><Save /> Save Product</Button>
       </div>
     </div>
-    { status === 'success' && <ProductForm id="edit-product" data={data} /> }
+    { status === 'success' && <ProductForm id="edit-product" data={data} action="edit" /> }
   </div>
 }
 
