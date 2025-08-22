@@ -9,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useQuery } from "@tanstack/react-query"
 import { Link, createFileRoute, useParams } from '@tanstack/react-router'
 import { Save, X } from "lucide-react"
@@ -48,7 +49,10 @@ function EditProduct() {
         <Button type="submit" form="edit-product"><Save /> Save Product</Button>
       </div>
     </div>
-    { status === 'success' && <ProductForm id="edit-product" data={data} action="edit" /> }
+    { status === 'pending' ?
+          <Skeleton className="mt-6 h-[325px] w-full rounded-xl" />
+        : <ProductForm id="edit-product" data={data} action="edit" />
+      }
   </div>
 }
 

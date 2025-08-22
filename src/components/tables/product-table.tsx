@@ -1,6 +1,38 @@
 "use client"
 
+import { deleteProduct } from "@/api/product/fetch-api"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { ButtonIcon } from "@/components/ui/button-icon"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
 import { formatCurrency, formatDateTable } from "@/lib/utils"
+import type { Pagination } from "@/types"
+import type { ProductListResponse, ProductResponse } from "@/types/product"
 import { Link } from "@tanstack/react-router"
 import {
   type ColumnDef,
@@ -18,46 +50,11 @@ import {
   CalendarDays,
   Pencil,
   SlidersHorizontal,
-  StepBack,
-  StepForward,
   Trash
 } from "lucide-react"
 import * as React from "react"
-
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { ButtonIcon } from "@/components/ui/button-icon"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-
-import { deleteProduct } from "@/api/product/fetch-api"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import type { Pagination } from "@/types"
-import type { ProductListResponse, ProductResponse } from "@/types/product"
 import { toast } from "sonner"
+import { TablePagination } from "../table-pagination"
 
 export const columns: ColumnDef<ProductResponse>[] = [
   {
@@ -198,66 +195,6 @@ function DeleteProductDialog({ productId }: { productId: number | string }) {
   )
 }
 
-function PaginationTable({search}: { search: Pagination }) {
-  return (
-    <div className="flex space-x-2">
-      <Link
-        to="/admin/products"
-        search={{ skip: 1 }}
-        disabled={!search.skip || search.skip === 1}
-      >
-        <Button
-          variant="secondary"
-          className="text-primary"
-          size="sm"
-        >
-          <StepBack />
-        </Button>
-      </Link>
-
-      {
-        [1,2,3,4,5].map((page) => (
-          <Link
-            to="/admin/products"
-            search={{ skip: page }}
-            disabled={!search.skip || search.skip === page}
-            key={page}
-          >
-            <Button
-              variant={search.skip === page ? undefined : "secondary"}
-              className={search.skip === page ? "active:bg-primary active:text-white" : "text-primary"}
-              size="sm"
-            >
-              {page}
-            </Button>
-          </Link>
-        ))
-      }
-      <ButtonIcon
-        variant="ghost"
-        size="sm"
-        disabled
-      >
-        ...
-      </ButtonIcon>
-
-      <Link
-        to="/admin/products"
-        search={{ skip: 6 }}
-        disabled={search.skip === 6}
-      >
-        <ButtonIcon
-          variant="secondary"
-          className="text-primary"
-          size="sm"
-        >
-          <StepForward />
-        </ButtonIcon>
-      </Link>
-    </div>
-  )
-}
-
 export function ProductTable({ data, search }: { data?: ProductListResponse, search: Pagination }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -287,8 +224,11 @@ export function ProductTable({ data, search }: { data?: ProductListResponse, sea
   })
   const showPageInfo = (search: Pagination): string => {
     const pageIndex = search.skip ? search.skip : 1;
+    const total = data?.total ? data.total : 0;
+    const fromRow = (pageIndex * 10 - 10) || 1
+    const toRow = (pageIndex * 10) > total ? total : (pageIndex * 10)
 
-    return `${(pageIndex * 10 - 10) || 1} - ${pageIndex * 10} from ${data?.total ?? 0}`;
+    return `${fromRow} - ${toRow} from ${total ?? 0}`;
   }
 
   return (
@@ -373,7 +313,7 @@ export function ProductTable({ data, search }: { data?: ProductListResponse, sea
         <div className="text-muted-foreground flex-1 text-sm">
           {showPageInfo(search)}
         </div>
-          <PaginationTable search={search} />
+          <TablePagination search={search} totalItems={data?.total ?? 0} />
       </div>
     </div>
   )
