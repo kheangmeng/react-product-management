@@ -7,6 +7,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Link } from "@tanstack/react-router"
+import { useRouterState } from '@tanstack/react-router';
 import type { LucideIcon } from "lucide-react"
 
 export function NavMain({
@@ -18,6 +19,16 @@ export function NavMain({
     icon?: LucideIcon
   }[]
 }) {
+  const routerState = useRouterState();
+  const currentPath = routerState.location.pathname;
+  const isActive = (url: string):boolean => {
+    const urls = url.split('?');
+    if (urls.length > 1) {
+      return currentPath === urls[0];
+    }
+    return currentPath === url;
+  }
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -26,7 +37,7 @@ export function NavMain({
             <Link disabled={!item.url} to={item.url} key={item.title}>
               <SidebarMenuItem
                 key={item.title}
-                className={!item.url ? "text-gray-300" : ''}
+                className={isActive(item.url) ? "font-bold" : "hover:text-black"}
               >
                 <SidebarMenuButton tooltip={item.title}>
                   {item.icon && <item.icon />}
