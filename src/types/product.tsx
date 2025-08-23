@@ -19,6 +19,8 @@ export interface ProductListResponse {
   limit: number
 }
 
+export type ProductEdit = Partial<Omit<ProductResponse, 'variant' | 'thumbnail' | 'images' | 'added'>>
+
 export type Product = Pick<ProductResponse,
   'title'
   | 'price'

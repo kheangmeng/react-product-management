@@ -1,6 +1,5 @@
 "use client"
 
-import { deleteProduct } from "@/api/product/fetch-api"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +30,8 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { formatCurrency, formatDateTable } from "@/lib/utils"
+import type { AppDispatch } from '@/store';
+import { deleteProduct } from '@/store/productSlice';
 import type { Pagination } from "@/types"
 import type { ProductListResponse, ProductResponse } from "@/types/product"
 import { Link } from "@tanstack/react-router"
@@ -49,12 +50,13 @@ import {
 import {
   CalendarDays,
   Pencil,
+  Search,
   SlidersHorizontal,
   Trash,
   TriangleAlert,
 } from "lucide-react"
 import * as React from "react"
-import { toast } from "sonner"
+import { useDispatch } from 'react-redux';
 import { TablePagination } from "../table-pagination"
 import { Skeleton } from "../ui/skeleton"
 
@@ -165,14 +167,7 @@ export const columns: ColumnDef<ProductResponse>[] = [
 ]
 
 function DeleteProductDialog({ productId }: { productId: number | string }) {
-  const handleDelete = async () => {
-    try {
-      await deleteProduct(productId)
-      toast.success("Product deleted successfully")
-    } catch (error) {
-      console.error("Failed to delete product:", error)
-    }
-  }
+  const dispatch: AppDispatch = useDispatch();
 
   return (
     <AlertDialog>
@@ -190,7 +185,7 @@ function DeleteProductDialog({ productId }: { productId: number | string }) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={() => dispatch(deleteProduct(`${productId}`))}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -297,10 +292,17 @@ export function ProductTable({ data, status, search }: { data?: ProductListRespo
           </TabsList>
         </Tabs>
         <div className="flex items-center py-4 gap-2">
-          <Input
-            placeholder="Search product..."
-            className="w-3xs"
-          />
+          <div className="w-3xs relative block">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-2">
+              <Search className="h-5 w-5 text-gray-400" />
+            </span>
+            <span className="sr-only">Search</span>
+              <Input
+                placeholder="Search product..."
+                className="block w-full py-2 pr-3 pl-9 text-gray-700"
+                type="text" name="search"
+              />
+          </div>
           <Button variant="outline" size="sm">
             <CalendarDays /> Select Date
           </Button>

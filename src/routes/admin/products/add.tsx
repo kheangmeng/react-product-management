@@ -8,14 +8,33 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
+import type { AppDispatch, RootState } from '@/store';
+import { resetStore } from '@/store/productSlice';
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { useRouter } from "@tanstack/react-router"
 import { Plus, X } from "lucide-react"
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from "sonner"
 
 export const Route = createFileRoute('/admin/products/add')({
   component: AddProduct,
 })
 
 function AddProduct() {
+  const router = useRouter()
+  const dispatch: AppDispatch = useDispatch();
+  const { error, status, successMessage } = useSelector((state: RootState) => state.products);
+
+  if (status === 'succeeded' && successMessage) {
+    toast.success(successMessage)
+    dispatch(resetStore())
+    router.navigate({ to: '/admin/products', search: { skip: 1 } })
+  }
+  if (status === 'failed' && error) {
+    toast.error(error)
+    dispatch(resetStore())
+  }
+
   return <div>
     <div className="flex justify-between items-center gap-2 px-3 mb-6">
       <Breadcrumb>
@@ -36,7 +55,9 @@ function AddProduct() {
         <Link to="/admin/products" search={{ skip: 1 }}>
           <Button variant="outline"> <X /> Cancel</Button>
         </Link>
-        <Button type="submit" form="add-product"><Plus /> Add Product</Button>
+        <Button disabled={status === 'loading'} type="submit" form="add-product">
+          { status === 'loading' ? 'Loading...' : <><Plus /> Add Product</> }
+        </Button>
       </div>
     </div>
     <ProductForm id="add-product" action="add" />

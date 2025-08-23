@@ -24,6 +24,13 @@ npm install
 npm run start
 ```
 
+To run with docker:
+
+```bash
+docker build -t react-product-management .
+docker run -p 8080:3000 react-product-management
+```
+
 # Building For Production
 
 To build this application for production:

@@ -1,6 +1,6 @@
 import type { Pagination } from "@/types";
 import { Link } from "@tanstack/react-router";
-import { StepBack, StepForward } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { ButtonIcon } from "./ui/button-icon";
 
@@ -79,7 +79,7 @@ export function TablePagination({search, totalItems}: { search: Pagination, tota
           className="text-primary"
           size="sm"
         >
-          <StepBack />
+          <ChevronLeft />
         </Button>
       </Link>
       {
@@ -116,7 +116,7 @@ export function TablePagination({search, totalItems}: { search: Pagination, tota
           className="text-primary"
           size="sm"
         >
-          <StepForward />
+          <ChevronRight />
         </ButtonIcon>
       </Link>
     </div>
