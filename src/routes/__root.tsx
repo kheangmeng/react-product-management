@@ -15,12 +15,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: () => (
     <>
       <Outlet />
+      <Toaster
+        position="top-center"
+        richColors={true}
+      />
       {
-        process.env.NODE_ENV !== 'production' && <>
-          <Toaster
-            position="top-center"
-            richColors={true}
-          />
+        process.env.NODE_ENV !== 'production' &&
           <TanstackDevtools
             config={{
               position: 'bottom-left',
@@ -33,7 +33,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
               TanStackQueryDevtools,
             ]}
           />
-        </>
       }
     </>
   ),
