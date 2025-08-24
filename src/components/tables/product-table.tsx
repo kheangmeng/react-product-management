@@ -270,6 +270,29 @@ function MainTable({ data }: { data?: ProductListResponse }) {
   </div>
 }
 
+function TabProduct() {
+  const [activeTab, setActiveTab] = React.useState('All Product')
+  const items = ['All Product', 'Published', 'Low Stock', 'Draft']
+
+  return (
+    <Tabs defaultValue="All Product">
+      <TabsList className="bg-white border-1 p-1">
+        {
+          items.map(item =>
+            <TabsTrigger
+              onClick={() => setActiveTab(item)}
+              key={item}
+              className={activeTab === item ? 'text-primary data-[state=active]:bg-secondary' : 'text-gray-500'}
+              value={item}
+            >
+              {item}
+            </TabsTrigger>
+        )}
+      </TabsList>
+    </Tabs>
+  )
+}
+
 export function ProductTable({ data, status, search }: { data?: ProductListResponse, status:"error" | "success" | "pending", search: Pagination }) {
   const showPageInfo = (search: Pagination): string => {
     const pageIndex = search.skip ? search.skip : 1;
@@ -283,14 +306,7 @@ export function ProductTable({ data, status, search }: { data?: ProductListRespo
   return (
     <div className="w-full">
       <div className="flex md:flex-row flex-col items-center justify-between">
-        <Tabs defaultValue="All Product">
-          <TabsList>
-            <TabsTrigger className="text-primary" value="All Product">All Product</TabsTrigger>
-            <TabsTrigger className="text-primary" value="Published">Published</TabsTrigger>
-            <TabsTrigger className="text-primary" value="Low Stock">Low Stock</TabsTrigger>
-            <TabsTrigger className="text-primary" value="Draft">Draft</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <TabProduct />
         <div className="flex items-center py-4 gap-2">
           <div className="w-3xs relative block">
             <span className="absolute inset-y-0 left-0 flex items-center pl-2">

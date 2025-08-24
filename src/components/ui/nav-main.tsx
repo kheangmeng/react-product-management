@@ -37,7 +37,7 @@ export function NavMain({
             <Link disabled={!item.url} to={item.url} key={item.title}>
               <SidebarMenuItem
                 key={item.title}
-                className={isActive(item.url) ? "font-bold" : "hover:text-black"}
+                className={isActive(item.url) ? "font-bold my-1" : "hover:text-black my-1"}
               >
                 <SidebarMenuButton tooltip={item.title}>
                   {item.icon && <item.icon />}

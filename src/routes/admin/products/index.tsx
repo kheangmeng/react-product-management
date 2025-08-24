@@ -48,7 +48,7 @@ function RouteComponent() {
           </span>
           <span className="sr-only">Search</span>
             <Input
-              placeholder="Search product..."
+              placeholder="Search order..."
               className="block w-full py-2 pr-3 pl-9 text-gray-700"
               type="text" name="search"
             />
