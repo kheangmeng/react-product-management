@@ -1,3 +1,4 @@
+import { getProfile } from "@/api/auth/fetch-api";
 import { AppSidebar } from "@/components/app-sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -8,9 +9,33 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import type { AuthenticatedUser } from "@/types";
 import { useRouterState } from '@tanstack/react-router';
 import { Bell, ChevronDown } from "lucide-react"
-import type { ReactNode } from "react"
+import  { type ReactNode, Suspense, use } from "react"
+import { ErrorBoundary } from "react-error-boundary";
+
+function UserContainer({ userPromise }: {userPromise: Promise<AuthenticatedUser>}) {
+  return (
+    <ErrorBoundary fallback={<p>⚠️</p>}>
+      <Suspense fallback={<p>⌛</p>}>
+        <UserDetail userPromise={userPromise} />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+function UserDetail({userPromise}: {userPromise: Promise<AuthenticatedUser>}) {
+  const user = use(userPromise)
+
+  return (
+    <Avatar className="rounded-lg">
+      <AvatarImage
+        src={user.image || 'https://avatars.githubusercontent.com/u/20764729?s=48&v=4'}
+      />
+      <AvatarFallback>{user.username}</AvatarFallback>
+    </Avatar>
+  )
+}
 
 function displayTitle(path: string): string {
    switch (path) {
@@ -26,6 +51,7 @@ function displayTitle(path: string): string {
 }
 
 export function AdminLayout({ children }: { children: ReactNode }) {
+  const userPromise = getProfile(1);
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
 
@@ -53,12 +79,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                 4
               </Badge>
             </div>
-            <Avatar className="rounded-lg">
-              <AvatarImage
-                src="https://avatars.githubusercontent.com/u/20764729?s=48&v=4"
-              />
-              <AvatarFallback>KM</AvatarFallback>
-            </Avatar>
+            <UserContainer userPromise={userPromise} />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">

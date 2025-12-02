@@ -27,8 +27,9 @@ export async function getProduct(id: number | string): Promise<ProductResponse> 
       'Content-Type': 'application/json',
     },
   })
+
+  const data = await response.json()
   if (response.ok) {
-    const data = await response.json()
     return mapProduct(data)
   }
   throw new Error(data.message)
