@@ -42,16 +42,16 @@ const formSchema = z.object({
   description: z.string().min(2, {
     message: "Description must be at least 2 characters.",
   }),
-  price: z.coerce.number().positive({
+  price: z.coerce.number<number>().positive({
     message: "Price must be a positive number.",
   }),
-  discountPercentage: z.coerce.number({
+  discountPercentage: z.coerce.number<number>({
     message: "Discount percentage must be a positive number.",
   }),
   sku: z.string().min(1, {
     message: "SKU is required.",
   }),
-  stock: z.coerce.number().min(1, {
+  stock: z.coerce.number<number>().min(1, {
     message: "Quantity must be a non-negative number.",
   }),
   category: z.string().min(1, {

@@ -35,16 +35,19 @@ const data = {
       title: "Order Management",
       url: "",
       icon: BaggageClaim,
+      disabled: true,
     },
     {
       title: "Customer Management",
       url: "",
       icon: Users,
+      disabled: true,
     },
     {
       title: "Report",
       url: "",
       icon: FileText,
+      disabled: true,
     },
   ],
 }

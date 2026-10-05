@@ -65,15 +65,15 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             <div>{ displayTitle(currentPath) }</div>
           </div>
           <div className="flex items-center gap-3 ml-auto mr-5">
-            <Button variant="outline" size="sm" className="bg-orange-200">
+            <Button variant="outline" size="sm" className="cursor-not-allowed bg-orange-200">
               Nik Shop <ChevronDown />
             </Button>
             <div className="relative">
-              <ButtonIcon className="size-10">
+              <ButtonIcon className="size-10 cursor-not-allowed">
                 <Bell />
               </ButtonIcon>
               <Badge
-                className="absolute top-0 right-0 h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
+                className="cursor-not-allowed absolute top-0 right-0 h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"
                 variant="destructive"
               >
                 4

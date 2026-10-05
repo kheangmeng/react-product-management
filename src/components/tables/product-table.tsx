@@ -34,7 +34,7 @@ import type { AppDispatch } from '@/store';
 import { deleteProduct } from '@/store/productSlice';
 import type { Pagination } from "@/types"
 import type { ProductListResponse, ProductResponse } from "@/types/product"
-import { Link } from "@tanstack/react-router"
+import { Link, useRouter } from "@tanstack/react-router"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -284,6 +284,7 @@ function TabProduct() {
               key={item}
               className={activeTab === item ? 'text-primary data-[state=active]:bg-secondary' : 'text-gray-500'}
               value={item}
+              disabled
             >
               {item}
             </TabsTrigger>
@@ -294,6 +295,7 @@ function TabProduct() {
 }
 
 export function ProductTable({ data, status, search }: { data?: ProductListResponse, status:"error" | "success" | "pending", search: Pagination }) {
+  const router = useRouter();
   const showPageInfo = (search: Pagination): string => {
     const pageIndex = search.skip ? search.skip : 1;
     const total = data?.total ? data.total : 0;
@@ -301,6 +303,22 @@ export function ProductTable({ data, status, search }: { data?: ProductListRespo
     const toRow = (pageIndex * 10) > total ? total : (pageIndex * 10)
 
     return `${fromRow} - ${toRow} from ${total ?? 0}`;
+  }
+
+  const timeout = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (timeout.current) {
+      clearTimeout(timeout.current)
+    }
+
+    timeout.current = setTimeout(() => {
+      const value = e.target.value;
+      const filterUrl = new URL(window.location.href);
+      filterUrl.searchParams.set('q', value);
+      filterUrl.searchParams.set('skip', '1');
+      const obj = Object.fromEntries(filterUrl.searchParams);
+      router.navigate({ to: '/admin/products', search: {...obj, skip: Number(obj.skip)} })
+    }, 1000)
   }
 
   return (
@@ -314,15 +332,17 @@ export function ProductTable({ data, status, search }: { data?: ProductListRespo
             </span>
             <span className="sr-only">Search</span>
               <Input
+                defaultValue={search.q || ''}
                 placeholder="Search product..."
                 className="block w-full py-2 pr-3 pl-9 text-gray-700"
                 type="text" name="search"
+                onChange={handleSearch}
               />
           </div>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="cursor-not-allowed">
             <CalendarDays /> Select Date
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="cursor-not-allowed">
             <SlidersHorizontal /> Filters
           </Button>
         </div>

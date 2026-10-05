@@ -51,9 +51,10 @@ function RouteComponent() {
               placeholder="Search order..."
               className="block w-full py-2 pr-3 pl-9 text-gray-700"
               type="text" name="search"
+              disabled
             />
         </div>
-        <Button variant="secondary" className="text-primary">
+        <Button variant="secondary" className="cursor-not-allowed text-primary">
           <Download /> Export
         </Button>
         <Link to="/admin/products/add">

@@ -16,7 +16,8 @@ export function NavMain({
   items: {
     title: string
     url: string
-    icon?: LucideIcon
+    icon?: LucideIcon,
+    disabled?: boolean,
   }[]
 }) {
   const routerState = useRouterState();
@@ -34,17 +35,34 @@ export function NavMain({
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           {items.map((item) => (
-            <Link disabled={!item.url} to={item.url} key={item.title}>
+            item.disabled
+              ?
               <SidebarMenuItem
                 key={item.title}
-                className={isActive(item.url) ? "font-bold my-1" : "hover:text-black my-1"}
+                className="font-semibold text-slate-300"
               >
-                <SidebarMenuButton tooltip={item.title}>
+                <SidebarMenuButton tooltip={item.title} className="cursor-not-allowed">
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-            </Link>
+              :
+              <Link
+                disabled={!item.url} to={item.url} key={item.title}
+                className="disabled:text-black"
+              >
+                <SidebarMenuItem
+                  key={item.title}
+                  className={
+                    isActive(item.url) ? "font-bold my-1" : "hover:text-black my-1"
+                  }
+                >
+                  <SidebarMenuButton tooltip={item.title}>
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </Link>
           ))}
         </SidebarMenu>
       </SidebarGroupContent>
