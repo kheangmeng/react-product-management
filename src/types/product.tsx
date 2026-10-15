@@ -10,6 +10,7 @@ export interface ProductResponse {
   stock: number
   variant?: number
   thumbnail?: string
+  img: string
   images?: string[]
 }
 export interface ProductListResponse {
@@ -19,7 +20,7 @@ export interface ProductListResponse {
   limit: number
 }
 
-export type ProductEdit = Partial<Omit<ProductResponse, 'variant' | 'thumbnail' | 'images' | 'added'>>
+export type ProductEdit = Partial<Omit<ProductResponse, 'variant' | 'thumbnail' | 'img' | 'images' | 'added'>>
 
 export type Product = Pick<ProductResponse,
   'title'
@@ -31,5 +32,6 @@ export type Product = Pick<ProductResponse,
   | 'stock'
   | 'variant'
   | 'thumbnail'
+  | 'img'
   | 'images'
 >

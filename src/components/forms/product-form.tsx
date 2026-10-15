@@ -13,6 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { ImageUpload } from "@/components/ui/image-upload"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -56,6 +57,9 @@ const formSchema = z.object({
   }),
   category: z.string().min(1, {
     message: "Category is required.",
+  }),
+  img: z.string().min(1, {
+    message: "Image is required.",
   }),
 })
 
@@ -261,6 +265,51 @@ function CategoryForm({form}: { form: SchemaForm}) {
   )
 }
 
+function ImageUploadForm({form}: { form: SchemaForm}) {
+  return (
+    <Card className="w-full mx-auto">
+      <CardHeader>
+        <CardTitle>Image</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-6">
+          <ImageUpload
+            value={form.getValues('img')}
+            onChange={
+              (e, val) => {
+                const temp = e.target.files?.[0] || null;
+                if (temp) {
+                  form.setValue('img', temp.name, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  });
+                }
+              }
+            }
+            onRemove={() => form.setValue('img', '')}
+          />
+          <FormField
+            control={form.control}
+            name="img"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <input
+                    className="w-full bg-surface-container-low border-none border-b-2 border-secondary focus:border-primary rounded-t-md px-4 py-3 text-on-surface focus:ring-0 transition-colors font-body-md text-body-md"
+                    type="text"
+                    hidden
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 export function ProductForm({ id, data, action }: { id?: string, data?: ProductResponse, action: 'add' | 'edit' }) {
   const dispatch: AppDispatch = useDispatch();
 
@@ -274,6 +323,7 @@ export function ProductForm({ id, data, action }: { id?: string, data?: ProductR
       sku: data?.sku || "",
       stock: data?.stock || 0,
       category: data?.category || "",
+      img: data?.images?.length && data.images[0] || "",
     },
   })
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -292,8 +342,9 @@ export function ProductForm({ id, data, action }: { id?: string, data?: ProductR
           <PriceForm form={form} />
           <InventoryForm form={form} />
         </div>
-        <div className="md:w-1/3 w-1/1 mx-auto">
+        <div className="flex flex-col gap-6 md:w-1/3 w-1/1 mx-auto">
           <CategoryForm form={form} />
+          <ImageUploadForm form={form} />
         </div>
       </form>
     </Form>
